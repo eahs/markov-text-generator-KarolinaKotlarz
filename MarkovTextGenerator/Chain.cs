@@ -11,12 +11,14 @@ namespace MarkovTextGenerator
         public Dictionary<String, List<Word>> words;
         private Dictionary<String, int> sums;
         private Random rand;
+        private List<String> startWords;
 
         public Chain ()
         {
             words = new Dictionary<String, List<Word>>();
             sums = new Dictionary<string, int>();
             rand = new Random(System.Environment.TickCount);
+            startWords = new List<string>();
         }
 
         /// <summary>
@@ -27,7 +29,7 @@ namespace MarkovTextGenerator
         /// <returns></returns>
         public String GetRandomStartingWord ()
         {
-            return words.Keys.ElementAt(rand.Next() % words.Keys.Count);
+            return startWords.ElementAt(rand.Next() % words.Keys.Count);
         }
 
         // Adds a sentence to the chain
@@ -46,6 +48,25 @@ namespace MarkovTextGenerator
             // TODO: Add each word pair to the chain
             // TODO: The last word of any sentence will be paired up with
             //       an empty string to show that it is the end of the sentence
+
+            List<String> wordsToPair = new List<string>();
+            wordsToPair = sentence.Split(' ').ToList();
+
+            while(wordsToPair.Count > 1)
+            {
+                string word1 = wordsToPair[0];
+                string word2 = wordsToPair[1];
+                //Console.WriteLine($"Adding {word1} and {word2}");
+                wordsToPair.RemoveAt(0);
+
+                AddPair(word1, word2);
+            }
+
+            if (wordsToPair.Count != 0)
+            {
+                AddPair(wordsToPair[0], "");
+                //Console.WriteLine($"Adding {wordsToPair[0]} and space");
+            }
         }
 
         // Adds a pair of words to the chain that will appear in order
@@ -93,11 +114,22 @@ namespace MarkovTextGenerator
             {
                 List<Word> choices = words[word];
                 double test = rand.NextDouble();
+                double chance = 0;
 
-                Console.WriteLine("I picked the number " + test); 
+                //Console.WriteLine("I picked the number " + test);
+
+                foreach (Word choice in choices)
+                {
+                    chance += choice.Probability;
+                    //Console.WriteLine($"Probability of {choice} is {choice.Probability}; current chance is {chance}");
+                    if (chance > test)
+                    {
+                        return choice.ToString();
+                    }
+                }
             }
 
-            return "idkbbq";
+            return "[error]";
         }
 
         /// <summary>
@@ -108,7 +140,20 @@ namespace MarkovTextGenerator
         /// <returns></returns>
         public String GenerateSentence(string startingWord)
         {
-            return "";
+            String sentence = startingWord;
+            String nextWord = GetNextWord(startingWord);
+            int count = 0;
+            
+            while (nextWord != "")
+            {
+                sentence += " ";
+                sentence += nextWord;
+                //Console.WriteLine($"Adding \"{nextWord}\"");
+                nextWord = GetNextWord(nextWord);
+                count++;
+            }
+            sentence += ".";
+            return sentence;
         }
         
         /// <summary>
