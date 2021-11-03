@@ -29,7 +29,7 @@ namespace MarkovTextGenerator
         /// <returns></returns>
         public String GetRandomStartingWord ()
         {
-            return startWords.ElementAt(rand.Next() % words.Keys.Count);
+            return startWords.ElementAt(rand.Next() % startWords.Count);
         }
 
         // Adds a sentence to the chain
@@ -52,6 +52,11 @@ namespace MarkovTextGenerator
             List<String> wordsToPair = new List<string>();
             wordsToPair = sentence.Split(' ').ToList();
 
+            if (wordsToPair.Count >= 1)
+            {
+                startWords.Add(wordsToPair[0]);
+            }
+            
             while(wordsToPair.Count > 1)
             {
                 string word1 = wordsToPair[0];
@@ -112,20 +117,22 @@ namespace MarkovTextGenerator
         {
             if (words.ContainsKey(word))
             {
-                List<Word> choices = words[word];
+                List<Word> choices =  words[word].OrderBy(choice => choice.Probability).ToList();
                 double test = rand.NextDouble();
-                double chance = 0;
+                double thisChance = 0;
 
                 //Console.WriteLine("I picked the number " + test);
 
                 foreach (Word choice in choices)
                 {
-                    chance += choice.Probability;
+                    thisChance += choice.Probability;
                     //Console.WriteLine($"Probability of {choice} is {choice.Probability}; current chance is {chance}");
-                    if (chance > test)
+                    if (thisChance > test)
                     {
                         return choice.ToString();
                     }
+                    
+                    //Console.WriteLine(choice.Probability);
                 }
             }
 

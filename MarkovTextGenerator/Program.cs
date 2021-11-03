@@ -17,8 +17,8 @@ namespace MarkovTextGenerator
 
             Console.WriteLine("Enter some text I can learn from (enter single ! to finish): ");
 
-            LoadText("Sample.txt", chain);
-
+            LoadText("Billboard.txt", chain);
+/*
             while (true)
             {
 
@@ -30,7 +30,7 @@ namespace MarkovTextGenerator
 
                 chain.AddString(line);  // Let the chain process this string
             }
-
+*/
             // Now let's update all the probabilities with the new data
             chain.UpdateProbabilities();
 
@@ -46,7 +46,13 @@ namespace MarkovTextGenerator
             Console.Write("> ");
             word = Console.ReadLine();
             String sentence = chain.GenerateSentence(word);
-            Console.WriteLine("Here is the sentence:\n\n" + sentence);
+            Console.WriteLine("Here is the sentence:\n\n" + sentence + "\n");
+
+            for (int i = 0; i < 30; i++)
+            {
+                String randomSentence = chain.GenerateSentence(chain.GetRandomStartingWord());
+                Console.Write($"{randomSentence} ");
+            }
         }
 
         static void LoadText(string filename, Chain chain)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MarkovTextGenerator
 {
-    public class Word
+    public class Word 
     {
         private String word;
         public int Count { get; set; } = 1;
@@ -23,5 +23,9 @@ namespace MarkovTextGenerator
             return this.word;
         }
         
+        public static int CompareByPopulation(Word word1, Word word2)
+        {
+            return word1.Probability.CompareTo(word2.Probability);
+        }
     }
 }
